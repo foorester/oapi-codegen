@@ -1,5 +1,11 @@
 ## OpenAPI Client and Server Code Generator
 
+## Fork Notes
+
+This fork of the OpenAPI generator, used in some of the projects under the Foorest organization, focuses on enhancing the readability and maintainability of server and client interface function names. In the original generator, the function names generated for URLs with nesting could become excessively long and convoluted. To address this issue and ensure code neatness and ease of modification, we have made modifications to the generator to produce shorter and more understandable function names.
+
+Please note that this fork is specifically tailored for the needs of those mentioned projects, and it may not be suitable for every use case.
+
 ⚠️ This README may be for the latest development version, which may contain
 unreleased changes. Please ensure you're looking at the README for the latest
 release version.
@@ -35,11 +41,11 @@ We're going to use the OpenAPI example of the
 in the descriptions below, please have a look at it.
 
 In order to create a Go server to serve this exact schema, you would have to
-write a lot of boilerplate code to perform all the marshaling and unmarshaling
+write a lot of boilerplate code to perform all the marshalling and unmarshalling
 into objects which match the OpenAPI 3.0 definition. The code generator in this
 directory does a lot of that for you. You would run it like so:
 
-    go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
+    go install github.com/foorester/oapi-codegen/cmd/oapi-codegen@latest
     oapi-codegen -package petstore petstore-expanded.yaml > petstore.gen.go
 
 Let's go through that `petstore.gen.go` file to show you everything which was
@@ -112,7 +118,7 @@ type ServerInterface interface {
 These are the functions which you will implement yourself in order to create
 a server conforming to the API specification. Normally, all the arguments and
 parameters are stored on the `echo.Context` in handlers, so we do the tedious
-work of unmarshaling the JSON automatically, simply passing values into
+work of unmarshalling the JSON automatically, simply passing values into
 your handlers.
 
 Notice that `FindPetById` takes a parameter `id int64`. All path arguments
@@ -231,8 +237,8 @@ func RegisterHandlersWithOptions(router *gin.Engine, si ServerInterface, options
 ```go
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/deepmap/oapi-codegen/examples/petstore-expanded/gin/api"
-	middleware "github.com/deepmap/oapi-codegen/pkg/gin-middleware"
+	"github.com/foorester/oapi-codegen/examples/petstore-expanded/gin/api"
+	middleware "github.com/foorester/oapi-codegen/pkg/gin-middleware"
 )
 
 type PetStoreImpl struct {}
@@ -297,7 +303,7 @@ func (*PetStoreImpl) GetPets(ctx context.Context, request GetPetsRequestObject) 
 }
 ```
 
-For a complete example see [`examples/petstore-expanded/strict`](https://github.com/deepmap/oapi-codegen/tree/master/examples/petstore-expanded/strict).
+For a complete example see [`examples/petstore-expanded/strict`](https://github.com/foorester/oapi-codegen/tree/master/examples/petstore-expanded/strict).
 
 Code is generated with a configuration flag `generate: strict-server: true` along with any other server (echo, chi, gin and gorilla are supported).
 The generated strict wrapper can then be used as an implementation for `ServerInterface`. Setup example:
@@ -373,7 +379,7 @@ func (a NewPet) MarshalJSON() ([]byte, error) {...}w
 
 There are many special cases for `additionalProperties`, such as having to
 define types for inner fields which themselves support additionalProperties, and
-all of them are tested via the [`internal/test/components`](https://github.com/deepmap/oapi-codegen/tree/master/internal/test/components) schemas and tests. Please
+all of them are tested via the [`internal/test/components`](https://github.com/foorester/oapi-codegen/tree/master/internal/test/components) schemas and tests. Please
 look through those tests for more usage examples.
 
 #### oneOf/anyOf/allOf support
@@ -515,7 +521,7 @@ which help you to use the various OpenAPI 3 Authentication mechanism.
 
 ```go
     import (
-        "github.com/deepmap/oapi-codegen/pkg/securityprovider"
+        "github.com/foorester/oapi-codegen/pkg/securityprovider"
     )
 
     func CreateSampleProviders() error {
@@ -736,7 +742,7 @@ in the openapi spec.
 Since `go generate` commands must be a single line, all the options above can make
 them pretty unwieldy, so you can specify all of the options in a configuration
 file via the `--config` option. Please see the test under
-[`/internal/test/externalref/`](https://github.com/deepmap/oapi-codegen/blob/master/internal/test/externalref/externalref.cfg.yaml)
+[`/internal/test/externalref/`](https://github.com/foorester/oapi-codegen/blob/master/internal/test/externalref/externalref.cfg.yaml)
 for an example. The structure of the file is as follows:
 
 ```yaml
@@ -745,14 +751,14 @@ generate:
   models: true
   embedded-spec: true
 import-mapping:
-  ./packageA/spec.yaml: github.com/deepmap/oapi-codegen/internal/test/externalref/packageA
-  ./packageB/spec.yaml: github.com/deepmap/oapi-codegen/internal/test/externalref/packageB
+  ./packageA/spec.yaml: github.com/foorester/oapi-codegen/internal/test/externalref/packageA
+  ./packageB/spec.yaml: github.com/foorester/oapi-codegen/internal/test/externalref/packageB
 output: externalref.gen.go
 output-options:
   skip-prune: true
 ```
 
-Have a look at [`cmd/oapi-codegen/oapi-codegen.go`](https://github.com/deepmap/oapi-codegen/blob/master/cmd/oapi-codegen/oapi-codegen.go#L48)
+Have a look at [`cmd/oapi-codegen/oapi-codegen.go`](https://github.com/foorester/oapi-codegen/blob/master/cmd/oapi-codegen/oapi-codegen.go#L48)
 to see all the fields on the configuration structure.
 
 ### Import Mappings
