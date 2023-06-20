@@ -27,3 +27,7 @@ test:
 tidy:
 	@echo "tidy..."
 	go mod tidy
+
+install:
+	go build ./cmd/oapi-codegen/oapi-codegen.go
+	cp oapi-codegen /home/adrian/go/bin/
