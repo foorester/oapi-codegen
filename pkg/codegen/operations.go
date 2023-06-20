@@ -23,7 +23,8 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/deepmap/oapi-codegen/pkg/util"
+	"github.com/gedex/inflector"
+	"github.com/foorester/oapi-codegen/pkg/util"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -616,8 +617,19 @@ func generateDefaultOperationID(opName string, requestPath string, toCamelCaseFu
 		return "", fmt.Errorf("request path cannot be an empty string")
 	}
 
-	for _, part := range strings.Split(requestPath, "/") {
-		if part != "" {
+	single := false
+	if strings.HasSuffix(requestPath, "Id}") || operationId == "post" {
+		single = true
+	}
+
+	segments := strings.Split(requestPath, "/")
+	for i, part := range segments {
+		if i == len(segments)-1 {
+			if strings.HasSuffix(part, "Id}") {
+				part = part[:len(part)-3]
+			} else if single {
+				part = inflector.Singularize(part)
+			}
 			operationId = operationId + "-" + part
 		}
 	}
